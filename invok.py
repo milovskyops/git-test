@@ -11,3 +11,5 @@ elif  money >= price_water and money <= price_milk:
     print('we can buy milk')
 else:
     print('we dont even have enough money for water')    
+
+print("Программа работает успешно")
