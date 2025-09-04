@@ -108,7 +108,7 @@ https://github.com/DayMarket/infra-live/blob/master/environments/dev/kafka/users
 # ... остальные  пользователи
 ```
 
-##создание своего топика##
+#Создание своего пользователя и добавление прав#
 
 ```hcl
     {
@@ -123,6 +123,7 @@ https://github.com/DayMarket/infra-live/blob/master/environments/dev/kafka/users
 
 ACCESS_ROLE_CONSUMER = read only 
 ACCESS_ROLE_PRODUCER = read write 
+
 
 
 
