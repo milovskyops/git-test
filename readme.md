@@ -81,7 +81,7 @@ topic_name = local.topic_configs["<название конфигурации>"]
 Тегнуть апруверов можно в слак канале #dx-team-infra-notifications-market ,  в коментариях своего PR. 
 
 
- ##Добавление пользователя и прав Kafka YC##
+ ## Добавление пользователя и прав Kafka YC ##
 Чтобы найти конфигурацию пользователей, необходимо пройти по пути:
 `environments → [окружение] → kafka → users → [кластер] → terragrunt.hcl`
 
@@ -124,6 +124,7 @@ https://github.com/DayMarket/infra-live/blob/master/environments/dev/kafka/users
 
 ACCESS_ROLE_CONSUMER = read only 
 ACCESS_ROLE_PRODUCER = read write 
+
 
 
 
