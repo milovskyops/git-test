@@ -254,6 +254,9 @@ users:
 </details>
 
 
+Если у вас нет доступа к репозиториям, то его можно получить через заявку в [JSM](https://jsm.uzum.com/servicedesk/customer/portal/5)
+
+Если вы думаете, что  про ваш PR забыли, тегнуть апруверов можно в слак канале #dx-team-infra-notifications-market 
 
 
 
