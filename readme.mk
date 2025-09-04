@@ -1,18 +1,18 @@
-# Создание топиков в Apache Kafka через Terraform
+# ==============================================
+# СОЗДАНИЕ ТОПИКОВ В APACHE KAFKA ЧЕРЕЗ TERRAFORM
+# ==============================================
 
-## Общая информация
-Инфраструктура UZUM реализована по принципу **Infrastructure as Code** и разворачивается через изменения в репозитории.
+# ОБЩАЯ ИНФОРМАЦИЯ
+# Инфраструктура UZUM реализована по принципу Infrastructure as Code 
+# и разворачивается через изменения в репозитории.
+#
+# Расположение кода: https://github.com/DayMarket/infra-live
 
-**Расположение кода:** https://github.com/DayMarket/infra-live
+# СТРУКТУРА КОНФИГУРАЦИИ ТОПИКОВ
+# Конфигурация топиков находится по пути:
+# environments → [окружение] → kafka → topics → [кластер] → terragrunt.hcl
 
-## Структура конфигурации топиков
-Конфигурация топиков находится по пути:
-environments → [окружение] → kafka → topics → [кластер] → terragrunt.hcl
-
-text
-
-## Пример конфигурации
-```hcl
+# ПРИМЕР КОНФИГУРАЦИИ
 # environments/dev/kafka/topics/common/terragrunt.hcl
 
 locals {
@@ -53,32 +53,31 @@ inputs = {
   }
 }
 
-## Процесс создания нового топика
-1. Добавление конфигурации топика
-Добавьте запись в конец блока topic_list:
+# ПРОЦЕСС СОЗДАНИЯ НОВОГО ТОПИКА
 
-hcl
-"new_topic_name" = local.topic_configs["config_name"]
-2. Выбор конфигурации
-Доступные варианты:
+# 1. Добавление конфигурации топика
+# Добавьте запись в конец блока topic_list:
+#
+# "new_topic_name" = local.topic_configs["config_name"]
 
-"default" - базовая конфигурация
+# 2. Выбор конфигурации
+# Доступные варианты:
+# - "default" - базовая конфигурация
+# - "wms-dev" - для WMS-сервисов
+# - "analytics-dev-1" - для аналитических данных
 
-"wms-dev" - для WMS-сервисов
+# 3. Создание кастомной конфигурации
+# Если стандартные конфигурации не подходят, добавьте новую в блок locals.topic_configs:
+#
+# "custom-config" = {
+#   partitions         = 4
+#   replication_factor = 2
+#   config             = {
+#     "retention.ms" = "86400000"
+#     "cleanup.policy" = "delete"
+#   }
+# }
 
-"analytics-dev-1" - для аналитических данных
+# 4. Создание Pull Request
+# Сделайте PR с изменениями в репозиторий https://github.com/DayMarket/infra-live
 
-## Создание кастомной конфигурации
-Если стандартные конфигурации не подходят, добавьте новую в блок locals.topic_configs:
-
-hcl
-"custom-config" = {
-  partitions         = 4
-  replication_factor = 2
-  config             = {
-    "retention.ms" = "86400000"
-    "cleanup.policy" = "delete"
-  }
-}
-4. Создание Pull Request
-Сделайте PR с изменениями в репозиторий https://github.com/DayMarket/infra-live
