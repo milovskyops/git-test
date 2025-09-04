@@ -118,7 +118,7 @@ https://github.com/DayMarket/infra-live/blob/master/environments/dev/kafka/users
       }
     },
 ```
-Если вы перейдете в конфигурационный файл, то можете заметить, что используются только уровня доступа: 
+Если вы перейдете в конфигурационный файл, то можете заметить, что используются только два уровня доступа: 
 
 ACCESS_ROLE_CONSUMER = read only 
 
@@ -127,5 +127,6 @@ ACCESS_ROLE_PRODUCER = read write
 </details>
 
 </details>
+
 
 
