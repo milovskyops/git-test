@@ -11,7 +11,6 @@
 Чтобы найти конфигурацию топиков Kafka, необходимо пройти по пути:
 `environments → [окружение] → kafka → topics → [кластер] → terragrunt.hcl`
 
- **Пример конфигурации топиков YC**
 
 Пример файла конфигурации топиков для common kafka cluster на dev окружении:
 https://github.com/DayMarket/infra-live/blob/master/environments/dev/kafka/topics/common/terragrunt.hcl
@@ -81,7 +80,51 @@ topic_name = local.topic_configs["<название конфигурации>"]
 Тегнуть апруверов можно в слак канале #dx-team-infra-notifications-market ,  в коментариях своего PR. 
 
 
-# Добавление пользователя и прав Kafka YC
+ **Добавление пользователя и прав Kafka YC**
+Чтобы найти конфигурацию пользователей, необходимо пройти по пути:
+`environments → [окружение] → kafka → users → [кластер] → terragrunt.hcl`
+
+
+Пример файла конфигурации пользователей для common kafka cluster на dev окружении:
+
+https://github.com/DayMarket/infra-live/blob/master/environments/dev/kafka/users/common/terragrunt.hcl
+
+```hcl
+######_kafka_users_creation_#####
+  users = [
+    {
+      name = "admin"
+      topics = {
+        "*" = ["ACCESS_ROLE_CONSUMER", "ACCESS_ROLE_PRODUCER"]
+      }
+    },
+    {
+      name = "ecom-platform"
+      topics = {
+        "translate.v1"        = ["ACCESS_ROLE_CONSUMER", "ACCESS_ROLE_PRODUCER"],
+        "translate_result.v1" = ["ACCESS_ROLE_CONSUMER"],
+      }
+    },
+# ... остальные  пользователи
+```
+
+**создание своего топика**
+
+```hcl
+    {
+      name = "название-юзера"
+      topics = {
+        "Название топика к которому нужны права"   = ["уроверь доступа",]
+ 
+      }
+    },
+```
+Если вы перейдете в конфигурационный файл, то можете заметить, что используются только уровня доступа: 
+
+ACCESS_ROLE_CONSUMER = read only 
+ACCESS_ROLE_PRODUCER = read write 
+
+
 
 
 
