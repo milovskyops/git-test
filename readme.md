@@ -2,7 +2,7 @@
 
 ## Общая информация
 
-Инфраструктура UZUM разворачивается и обновляется через изменения в коде. Код находится в репозитории: [https://github.com/DayMarket/infra-live](https://github.com/DayMarket/infra-live)
+Инфраструктура UZUM разворачивается и обновляется через изменения в коде. Код находится в репозитории: [infra-live](https://github.com/DayMarket/infra-live)
 
 ## Расположение конфигурации топиков
 
@@ -75,6 +75,7 @@ topic_name = local.topic_configs["<название конфигурации>"]
 Если сомневаешься то можешь использовать конфигурацию "default"
 
 Тегнуть апруверов можно в слак канале #dx-team-infra-notifications-market 
+
 
 
 
