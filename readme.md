@@ -68,6 +68,7 @@ inputs = {
 
 
 Создание своего топика
+
 Чтобы создать новый топик надо добавить в конец topic_list новую строку
 
 ```hcl
@@ -123,6 +124,7 @@ https://github.com/DayMarket/infra-live/blob/master/environments/dev/kafka/users
 
 ACCESS_ROLE_CONSUMER = read only 
 ACCESS_ROLE_PRODUCER = read write 
+
 
 
 
