@@ -4,6 +4,10 @@
 
 Второй – кафка в k8s. Тут уже кластера создаются под конкретные задачи, например, только под дебезиум-коннекторы и для команд/сервисов их использующих. 
 
+Если у вас нет доступа к репозиториям, то его можно получить через заявку в [JSM](https://jsm.uzum.com/servicedesk/customer/portal/5)
+
+Если вы думаете, что  про ваш PR забыли, тегнуть апруверов можно в слак канале #dx-team-infra-notifications-market .
+
 ## Создание топиков  Kafka YС
 
 Для YC кластеров кафки, пользователи и топики создаются в репозитории [infra-live](https://github.com/DayMarket/infra-live)
@@ -78,7 +82,6 @@ topic_name = local.topic_configs["<название конфигурации>"]
 
 Если сомневаешься то можешь использовать конфигурацию "default"
 
-Тегнуть апруверов можно в слак канале #dx-team-infra-notifications-market ,  в коментариях своего PR. 
 
 
  ## Добавление пользователя и прав Kafka YC ##
@@ -126,19 +129,108 @@ ACCESS_ROLE_CONSUMER = read only
 ACCESS_ROLE_PRODUCER = read write 
 
 
+## Создание топиков K8S
 
+В данном случае топики создаются через репозиторий   [infra-argocd](https://github.com/DayMarket/infra-argocd)
 
+Чтобы найти конфигурацию топиков Kafka, необходимо пройти по пути:
+` [окружение] → kafka → data-apps(dev/prod) или infra-apps(stage) → strimzi-operator → kafka-topics.yaml`
 
+Пример из Stage:
+https://github.com/DayMarket/infra-argocd/blob/master/stage/infra-apps/strimzi/kafka-topics.yaml
 
+```hcl
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: search.fast-categories-ranking-updates.v1
+  namespace: svc-data-kafka-connect
+  labels:
+    strimzi.io/cluster: stage-kafka-cluster
+spec:
+  topicName: search.fast_categories_ranking_updates.v1
+  partitions: 3
+  replicas: 3
+  config:
+    min.insync.replicas: 1
+    retention.bytes: 1073741824
+    retention.ms: 172800001
+    segment.bytes: 314572800
+    flush.messages: 1000
+    flush.ms: 1800000
+    file.delete.delay.ms: 0
+    cleanup.policy: delete
+    compression.type: lz4
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: discovery.sku.filters.updates
+  namespace: svc-data-kafka-connect
+  labels:
+    strimzi.io/cluster: stage-kafka-cluster
+spec:
+  topicName: discovery.sku.filters.updates
+  partitions: 3
+  replicas: 3
+  config:
+    min.insync.replicas: 1
+    retention.bytes: 1073741824
+    retention.ms: 172800001
+    segment.bytes: 314572800
+    flush.messages: 1000
+    flush.ms: 1800000
+    file.delete.delay.ms: 0
+    cleanup.policy: delete
+    compression.type: lz4
+```
 
+## Создание пользователя и добавление прав Kafka k8s
 
+Пользователей мы создаем через репозиторий [infra-helm](https://github.com/DayMarket/infra-helm)
 
+Найти конфигурационный файл можно по пути: 
 
+`charts → kafka-users → окружение.values.yaml`
 
+Пример конфигурационного файла из stage окружения: 
 
+https://github.com/DayMarket/infra-helm/blob/master/charts/kafka-users/dev.values.yaml
 
+```hcl
 
-
-
-
-
+users:
+  user1:
+    passwordKey: example_user_1_password
+    acls:
+      - host: "*"
+        resource:
+          type: topic
+          name: "topic-example-wildcard-"
+          patternType: prefix
+        operations:
+          - All
+      - host: "*"
+        resource:
+          type: topic
+          name: "topic_example"
+          patternType: prefix
+        operations:
+          - All
+      - host: "*"
+        resource:
+          type: group
+          name: "*"
+          patternType: literal
+        operations:
+          - All
+  user2:
+    passwordKey: example_user_2_password
+    acls:
+      - host: "*"
+        resource:
+          type: topic
+          name: "user2-topic"
+          patternType: literal
+        operations:
+          
