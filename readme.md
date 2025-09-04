@@ -12,6 +12,7 @@
 ## Пример конфигурации
 
 Пример файла конфигурации топиков для common kafka cluster на dev окружении:
+https://github.com/DayMarket/infra-live/blob/master/environments/dev/kafka/topics/common/terragrunt.hcl
 
 ```hcl
 # environments/dev/kafka/topics/common/terragrunt.hcl
@@ -74,5 +75,6 @@ topic_name = local.topic_configs["<название конфигурации>"]
 Если сомневаешься то можешь использовать конфигурацию "default"
 
 Тегнуть апруверов можно в слак канале #dx-team-infra-notifications-market 
+
 
 
