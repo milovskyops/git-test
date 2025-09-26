@@ -196,4 +196,5 @@ inputs = {
   view_users = [ /// ДОБАВИЛИ ЗДЕСЬ САМО НАЛИЧИЕ VIEW ПРАВ
     dependency.dev-accounting-data-1c-ro.outputs.service_account_id, /// ДОБАВИЛИ SA ПОЛУЧЕННЫЙ ИЗ DEPENDENCY
   ],
+```
 
