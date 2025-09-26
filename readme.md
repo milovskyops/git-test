@@ -79,9 +79,14 @@ dependency "ml-recsys-sa" {
     dependency.ml-recsys-sa.outputs.service_account_id
   ]
   ``
-Доступные опции для разграничения прав пользователей: admin_users, write_with_delete_users, write_without_delete_users, view_users.
+  
+Доступные опции для разграничения прав пользователей: 
+*admin_users, write_with_delete_users, write_without_delete_users, view_users.*
 
-Блок dependency позволяет получить ресурс (в данном случае id сервис-аккаунта) из другой части terragrunt кода.
+Блок *dependency* позволяет получить ресурс (в данном случае id сервис-аккаунта) из другой части terragrunt кода. Если мы перейдем по относительному пути, то как раз это заметим.
+
+Предлагаю запомнить этот момент, тк он понадобится в блоке.
+
 
 
 
