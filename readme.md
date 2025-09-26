@@ -6,7 +6,8 @@
 Также присутствует модуль без номера (называем его v1) и v2.
 
 Как понять какая версия у уже созданного бакета – смотрим на строчку:
-``hcl
+
+``
 terraform {
   source = "git::git@github.com:DayMarket/infra-modules.git//modules/s3/yandex-v2?ref=v1.1.1"
 }
@@ -81,6 +82,7 @@ dependency "ml-recsys-sa" {
 Доступные опции для разграничения прав пользователей: admin_users, write_with_delete_users, write_without_delete_users, view_users.
 
 Блок dependency позволяет получить ресурс (в данном случае id сервис-аккаунта) из другой части terragrunt кода.
+
 
 
 
