@@ -23,7 +23,8 @@ terraform {
 
 Достаточно посмотреть на пример созданного SA: https://github.com/DayMarket/infra-live/blob/master/environments/dev/sa/data/mlgrowth-sa-dev/terragrunt.hcl
 
-``hcl
+```hcl
+
 locals {
   env = read_terragrunt_config(find_in_parent_folders("env.hcl")).locals
 }
@@ -47,7 +48,10 @@ inputs = {
   roles            = []
   keep_static_keys = true
 }
-``
+```
+
+
+
 
 *Стоит запомнить относительный путь и название директорий, они понадобятся дальше.*
 
@@ -78,6 +82,7 @@ dependency "ml-recsys-sa" {
 Доступные опции для разграничения прав пользователей: admin_users, write_with_delete_users, write_without_delete_users, view_users.
 
 Блок dependency позволяет получить ресурс (в данном случае id сервис-аккаунта) из другой части terragrunt кода.
+
 
 
 
