@@ -1,13 +1,11 @@
 
-**Создание S3 и SA **
+**Создание S3 и SA**
+
 Для создания новых бакетов мы используем только модуль v3. 
 
 Также присутствует модуль без номера (называем его v1) и v2.
 
-
 Как понять какая версия у уже созданного бакета – смотрим на строчку:
-
-
 ``hcl
 terraform {
   source = "git::git@github.com:DayMarket/infra-modules.git//modules/s3/yandex-v2?ref=v1.1.1"
@@ -19,6 +17,7 @@ terraform {
 Если yandex-v3 → очевидно что v3.
 
 **Как создать SA**
+
 Тут крайне все просто.
 
 Достаточно посмотреть на пример созданного SA: https://github.com/DayMarket/infra-live/blob/master/environments/dev/sa/data/mlgrowth-sa-dev/terragrunt.hcl
@@ -82,6 +81,7 @@ dependency "ml-recsys-sa" {
 Доступные опции для разграничения прав пользователей: admin_users, write_with_delete_users, write_without_delete_users, view_users.
 
 Блок dependency позволяет получить ресурс (в данном случае id сервис-аккаунта) из другой части terragrunt кода.
+
 
 
 
