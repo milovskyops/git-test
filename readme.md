@@ -1,30 +1,14 @@
+Выдача прав для SA в бакете
+Модуль v1 и v2
+Вы нашли в infra-live бакет с версией v1 или v2.
 
-**Создание S3 и SA**
+К примеру, вот ваш terragrunt файл:
 
-Для создания новых бакетов мы используем только модуль v3. 
 
-Также присутствует модуль без номера (называем его v1) и v2.
 
-Как понять какая версия у уже созданного бакета – смотрим на строчку:
 
-``
-terraform {
-  source = "git::git@github.com:DayMarket/infra-modules.git//modules/s3/yandex-v2?ref=v1.1.1"
-}
-``
-
-Собственно если yandex-v2 или просто yandex → это v2 и v1 соответственно.
-
-Если yandex-v3 → очевидно что v3.
-
-**Как создать SA**
-
-Тут крайне все просто.
-
-Достаточно посмотреть на пример созданного SA: https://github.com/DayMarket/infra-live/blob/master/environments/dev/sa/data/mlgrowth-sa-dev/terragrunt.hcl
 
 ```hcl
-
 locals {
   env = read_terragrunt_config(find_in_parent_folders("env.hcl")).locals
 }
@@ -38,62 +22,175 @@ include "yc" {
 }
 
 terraform {
-  source = "git::git@github.com:DayMarket/infra-modules.git//modules/sa?ref=v1.24.4"
+  source = "git::git@github.com:DayMarket/infra-modules.git//modules/s3/yandex-v2?ref=v1.1.1"
 }
 
-inputs = {
-  name             = "mlgrowth-sa-dev"
-  description      = "mlgrowth-sa-dev SA in dev env"
-  key_description  = "Key mlgrowth-sa-dev sa in dev env"
-  roles            = []
-  keep_static_keys = true
-}
-```
-
-
-
-
-*Стоит запомнить относительный путь и название директорий, они понадобятся дальше.*
-
-**Как создать бакет**
-
-
-Пример созданного бакета: https://github.com/DayMarket/infra-live/blob/master/environments/prod/s3/yandex/um-prod-recsys-models/terragrunt.hcl 
-
-Обращаю внимание на блок:
-
-
-```hcl
-dependency "ml-recsys-sa" {
-  config_path = "../../../sa/data/ml-recsys-sa"
+dependency "mlgrowth-sa" {
+  config_path = "../../../sa/data/mlgrowth"
   mock_outputs = {
     service_account_id = "mock_account_id"
   }
   mock_outputs_merge_strategy_with_state = "deep_map_only"
 }
+
+inputs = {
+  yc_folder_id = local.env.folder_id
+  bucket       = "mlgrowth"
+  bucket_grants = [
+    {
+      type        = "CanonicalUser"
+      permissions = ["READ", "WRITE"]
+      id          = dependency.mlgrowth-sa.outputs.service_account_id
+      uri         = null
+    }
+  ]
+}
 ```
-Который потом используется вот тут:
+И мы хотим добавить прав SA созданному выше в «Как создать SA», нам требуется добавить два блока и по итогу наш terragrunt файл начнет выглядеть вот так:
 
 
 ```hcl
-  admin_users = [
-    "ajeve12vlvr3glt7fvf4", #Nariman Daniyar
-    dependency.ml-recsys-sa.outputs.service_account_id
+locals {
+  env = read_terragrunt_config(find_in_parent_folders("env.hcl")).locals
+}
+
+include "state" {
+  path = find_in_parent_folders()
+}
+
+include "yc" {
+  path = find_in_parent_folders("yc.hcl")
+}
+
+terraform {
+  source = "git::git@github.com:DayMarket/infra-modules.git//modules/s3/yandex-v2?ref=v1.1.1"
+}
+
+dependency "mlgrowth-sa" {
+  config_path = "../../../sa/data/mlgrowth"
+  mock_outputs = {
+    service_account_id = "mock_account_id"
+  }
+  mock_outputs_merge_strategy_with_state = "deep_map_only"
+}
+
+/// ДОБАВИЛИ ВОТ ТУТ БЛОК ДЛЯ ПОЛУЧЕНИЯ ID СЕРВИСНОГО АККАУНТА 
+dependency "mlgrowth-sa-dev" {
+  config_path = "../../../sa/data/mlgrowth-sa-dev"
+  mock_outputs = {
+    service_account_id = "mock_account_id"
+  }
+  mock_outputs_merge_strategy_with_state = "deep_map_only"
+}
+
+inputs = {
+  yc_folder_id = local.env.folder_id
+  bucket       = "mlgrowth"
+  bucket_grants = [
+    {
+      type        = "CanonicalUser"
+      permissions = ["READ", "WRITE"]
+      id          = dependency.mlgrowth-sa.outputs.service_account_id
+      uri         = null
+    },
+/// ДОБАВИЛИ ВОТ ТУТ БЛОК ДЛЯ ВЫДАЧИ RW ПРАВ, ЕСЛИ НУЖНО RO –> ОСТАВЛЯЕТЕ ТОЛЬКО READ
+    {
+      type        = "CanonicalUser"
+      permissions = ["READ", "WRITE"]
+      id          = dependency.mlgrowth-sa-dev.outputs.service_account_id
+      uri         = null
+    },
   ]
   ```
-  
-Доступные опции для разграничения прав пользователей: 
-*admin_users, write_with_delete_users, write_without_delete_users, view_users.*
+}
 
-Блок *dependency* позволяет получить ресурс (в данном случае id сервис-аккаунта) из другой части terragrunt кода. Если мы перейдем по относительному пути, то как раз это заметим.
-
-Предлагаю запомнить этот момент, тк он понадобится в блоке.
+**V3**
 
 
+Практически то же самое
+
+Доступные опции для разграничения прав пользователей: admin_users, write_with_delete_users, write_without_delete_users, view_users.
+
+Ваш terragrunt файл выглядел вот так:
 
 
+```hcl
+locals {
+  env = read_terragrunt_config(find_in_parent_folders("env.hcl")).locals
+}
+
+include "state" {
+  path = find_in_parent_folders()
+}
+
+include "yc" {
+  path = find_in_parent_folders("yc.hcl")
+}
+
+terraform {
+  source = "git::git@github.com:DayMarket/infra-modules.git//modules/s3/yandex-v3?ref=v1.21.0"
+}
+
+dependency "dev-accounting-data-1c-rw" {
+  config_path = "../../../sa/data/dev-accounting-data-1c-rw"
+  mock_outputs = {
+    service_account_id = "mock_account_id"
+  }
+  mock_outputs_merge_strategy_with_state = "deep_map_only"
+}
 
 
+inputs = {
+  yc_folder_id = local.env.folder_id
+  bucket       = "um-dev-accounting-data-1c"
+  admin_users = [
+    dependency.dev-accounting-data-1c-rw.outputs.service_account_id
+  ],
+}
+```
+Хотим добавить service account с view правами:
 
 
+```hcl
+locals {
+  env = read_terragrunt_config(find_in_parent_folders("env.hcl")).locals
+}
 
+include "state" {
+  path = find_in_parent_folders()
+}
+
+include "yc" {
+  path = find_in_parent_folders("yc.hcl")
+}
+
+terraform {
+  source = "git::git@github.com:DayMarket/infra-modules.git//modules/s3/yandex-v3?ref=v1.21.0"
+}
+
+dependency "dev-accounting-data-1c-rw" {
+  config_path = "../../../sa/data/dev-accounting-data-1c-rw"
+  mock_outputs = {
+    service_account_id = "mock_account_id"
+  }
+  mock_outputs_merge_strategy_with_state = "deep_map_only"
+}
+
+/// ДОБАВИЛИ DEPENDENCY ДЛЯ ПОЛУЧЕНИЯ ID SERVICE ACCOUNT
+dependency "dev-accounting-data-1c-ro" {
+  config_path = "../../../sa/data/dev-accounting-data-1c-ro"
+  mock_outputs = {
+    service_account_id = "mock_account_id"
+  }
+  mock_outputs_merge_strategy_with_state = "deep_map_only"
+}
+
+inputs = {
+  yc_folder_id = local.env.folder_id
+  bucket       = "um-dev-accounting-data-1c"
+  admin_users = [
+    dependency.dev-accounting-data-1c-rw.outputs.service_account_id
+  ],
+  view_users = [ /// ДОБАВИЛИ ЗДЕСЬ САМО НАЛИЧИЕ VIEW ПРАВ
+    dependency.dev-accounting-data-1c-ro.outputs.service_account_id, /// ДОБАВИЛИ SA ПОЛУЧЕННЫЙ ИЗ DEPENDENCY
+  ],
