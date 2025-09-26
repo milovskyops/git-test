@@ -61,7 +61,7 @@ inputs = {
 Обращаю внимание на блок:
 
 
-``hcl
+```hcl
 dependency "ml-recsys-sa" {
   config_path = "../../../sa/data/ml-recsys-sa"
   mock_outputs = {
@@ -69,16 +69,16 @@ dependency "ml-recsys-sa" {
   }
   mock_outputs_merge_strategy_with_state = "deep_map_only"
 }
-``
+```
 Который потом используется вот тут:
 
 
-``hcl
+```hcl
   admin_users = [
     "ajeve12vlvr3glt7fvf4", #Nariman Daniyar
     dependency.ml-recsys-sa.outputs.service_account_id
   ]
-  ``
+  ```
   
 Доступные опции для разграничения прав пользователей: 
 *admin_users, write_with_delete_users, write_without_delete_users, view_users.*
@@ -86,6 +86,7 @@ dependency "ml-recsys-sa" {
 Блок *dependency* позволяет получить ресурс (в данном случае id сервис-аккаунта) из другой части terragrunt кода. Если мы перейдем по относительному пути, то как раз это заметим.
 
 Предлагаю запомнить этот момент, тк он понадобится в блоке.
+
 
 
 
